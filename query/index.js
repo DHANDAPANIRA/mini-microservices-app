@@ -19,18 +19,30 @@ app.post('/events', (req, res) => {
     
     if (type === 'PostCreated') {
         const { id, title } = data;
-        posts[id] = {id, title, comments:[]};
+
+        posts[id] = {id, title, comments: [] };
     }
 
-    if(type === 'CommentCreated') {
-        const {id, content, postId} = data;
+    if(type === 'CommentCreated'){
+        const {id, content, postId, status} = data;
         const post = posts[postId];
-        post.comments.push({id, content});
+        post.comments.push({ id, content, status });
+    }
+    
+    if(type === 'CommentUpdated') {
+        const {id, content, postId, status} = data;
+
+        const post = posts[postId];  // find the post which was updated
+        const comment = post.comments.find(comment => {
+            return comment.id === id;  // find the comment which was updated
+        });
+        comment.status = status;
+        comment.content = content;
     }
 
     console.log(posts);
 
-    res.send({}); //send default response null
+    res.send({}); //add send response otherwise request going to hang
 });
 
 
