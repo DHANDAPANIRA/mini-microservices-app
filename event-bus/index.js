@@ -7,8 +7,12 @@ const app = express();
 app.use(bodyParser.json());
 app.use(cors());
 
+const events = [];
+
 app.post('/events', (req, res) => {
     const event = req.body;
+
+    events.push(event); // store all events in event bus for later processing, incase query service is failed to connect the process later
 
     axios.post('http://localhost:4000/events', event).catch((err) => {
         console.log(err.message);
@@ -24,6 +28,10 @@ app.post('/events', (req, res) => {
       });
 
     res.send({status: 'OK' });
+});
+
+app.get('/events', (req, res) => {
+    res.send(events); // store all events in event bus for later processing, incase query service is failed to connect the process later
 });
 
 app.listen(4005, () => {
